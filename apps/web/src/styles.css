@@ -146,6 +146,14 @@
 
   body {
     min-width: 320px;
+    overscroll-behavior: none;
+  }
+
+  button,
+  [role='button'],
+  [role='tab'],
+  [role='menuitem'] {
+    touch-action: manipulation;
   }
 
   button,
@@ -366,6 +374,17 @@
     --danger-soft: rgb(226 114 106 / 10%);
     --code-text: #e0a882;
     --code-wash: rgb(230 230 230 / 8%);
+  }
+}
+
+/* iOS Safari zooms the page when a focused text control renders below 16px.
+   Phones and tablets get a 16px floor; desktop densities are untouched, and
+   pinch-zoom stays enabled (no `maximum-scale`). */
+@media (any-pointer: coarse) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file']),
+  textarea,
+  select {
+    font-size: 16px !important;
   }
 }
 

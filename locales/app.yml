@@ -290,6 +290,12 @@ web.load_failed:
   en: Couldn’t load Waku
 web.try_again:
   en: Try again
+web.not_found_title:
+  en: Page not found
+web.not_found_description:
+  en: This address does not match any view in Waku Web. Check the link, or go back to your sessions.
+web.not_found_back:
+  en: Back to Waku
 web.daemon_connection_closed:
   en: The daemon connection closed
 web.daemon_not_configured:

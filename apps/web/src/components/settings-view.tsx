@@ -25,6 +25,7 @@ import { useDaemon } from '@/lib/daemon-context'
 import {
   applyThemeChoice,
   readThemeChoice,
+  THEME_STORAGE_KEY,
   type ThemeChoice,
 } from '@/lib/appearance'
 import {
@@ -192,12 +193,12 @@ function AppearanceSettings() {
     ? 'system'
     : readThemeChoice(window.localStorage))
   useEffect(() => {
-    const systemAppearance = window.matchMedia('(prefers-color-scheme: dark)')
-    const apply = () => applyThemeChoice(document.documentElement, theme, systemAppearance.matches)
-    apply()
-    window.localStorage.setItem('waku.theme', theme)
-    systemAppearance.addEventListener('change', apply)
-    return () => systemAppearance.removeEventListener('change', apply)
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme)
+    applyThemeChoice(
+      document.documentElement,
+      theme,
+      window.matchMedia('(prefers-color-scheme: dark)').matches,
+    )
   }, [theme])
   const themeLabel = t(`settings.theme_${theme}`)
   return (

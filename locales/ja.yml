@@ -147,6 +147,9 @@ web.starting_label: Waku を起動中
 web.start_failed_label: Waku を起動できませんでした
 web.load_failed: Waku を読み込めませんでした
 web.try_again: もう一度試す
+web.not_found_title: ページが見つかりません
+web.not_found_description: このアドレスに対応する画面はありません。リンクを確認するか、セッションに戻ってください。
+web.not_found_back: Waku に戻る
 web.daemon_connection_closed: デーモンとの接続が閉じられました
 web.daemon_not_configured: デーモンが設定されていません
 web.error_daemon_url_required: デーモン URL を入力してください

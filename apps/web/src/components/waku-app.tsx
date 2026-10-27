@@ -980,7 +980,10 @@ export function WakuApp() {
   )
 
   return (
-    <div className="flex h-dvh w-full overflow-hidden bg-background">
+    <div
+      className="flex w-full overflow-hidden bg-background pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
+      style={{ height: 'var(--app-height, 100dvh)' }}
+    >
       {sidebarVisible && (
         <Sidebar
           mobileOpen={mobileSidebar}
