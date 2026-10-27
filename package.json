@@ -1,5 +1,11 @@
 {
   "name": "waku-workspace",
+  "private": true,
+  "workspaces": [
+    "website",
+    "apps/*",
+    "packages/*"
+  ],
   "type": "module",
   "scripts": {
     "dev": "bun ./scripts/dev.ts",
@@ -9,8 +15,6 @@
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push"
   },
-  "private": true,
-  "trustedDependencies": ["expo-libghostty"],
   "devDependencies": {
     "@libsql/client": "^0.17.4",
     "@types/bun": "latest",
@@ -18,9 +22,11 @@
     "drizzle-orm": "^0.45.2",
     "typescript": "^7.0.2"
   },
-  "workspaces": ["website", "apps/*", "packages/*"],
   "patchedDependencies": {
     "@mattermost/react-native-paste-input@2.0.1": "patches/@mattermost%2Freact-native-paste-input@2.0.1.patch",
     "expo-libghostty@0.8.1": "patches/expo-libghostty@0.8.1.patch"
-  }
+  },
+  "trustedDependencies": [
+    "expo-libghostty"
+  ]
 }

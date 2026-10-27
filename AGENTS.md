@@ -1,5 +1,32 @@
 # Waku development guidance
 
+## Customizations
+
+- [custom.md](custom.md) is the log of local forks from upstream behavior: goal,
+  where the change landed, constraints, and open items. Read it before changing
+  `apps/web`, deployment, or any behavior it names, and record a new entry there
+  first when a task changes deployment shape, data ownership, or interaction
+  model. If upstream guidance and custom.md disagree, custom.md wins for this
+  checkout.
+- `apps/web` is deployed as a **static SPA**, not an SSR app: no Cloudflare
+  plugin, no Worker `ssr` environment, no `/server-entry`. `tanstackStart` runs
+  with `spa.enabled` and prerenders a single `index.html`; all routing is
+  client-side. Do not add `createServerFn`, server routes, server-only loaders,
+  `process.env` secrets, or platform bindings to it — the browser talks to the
+  user's daemon directly over the entered WebSocket URL and token. Details and
+  the remaining static-hosting work are in custom.md §001.
+- `apps/web` targets phones as well as desktops (custom.md §002), and the mobile
+  surface is deliberately kept to four small spots so upstream merges stay
+  cheap: the iOS focus-zoom guard in `styles.css` (text controls pinned to 16px
+  under `@media (any-pointer: coarse)`), `apps/web/src/hooks/use-app-height.ts`
+  driving `--app-height` so the soft keyboard cannot cover the composer, the
+  safe-area insets on the app shell (`apps/web/src/components/waku-app.tsx`), and
+  `format-detection: telephone=no` in `apps/web/src/routes/__root.tsx`. Do not
+  re-add `maximum-scale` / `user-scalable=no`, and do not grow a broader mobile
+  layer (`coarse:` utilities, per-component hit-area or hover rewrites, narrow
+  screen re-layouts) — a large rewrite of upstream component markup makes future
+  upstream merges expensive.
+
 ## Development runtime
 
 - Assume `bun ./scripts/dev.ts` is already running and owns the current
