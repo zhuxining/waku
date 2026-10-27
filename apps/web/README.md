@@ -1,8 +1,8 @@
 # Waku Web
 
-Browser client for an existing Waku daemon. The Cloudflare Worker serves the
-TanStack Start application only; it does not start, proxy, or store credentials
-for a daemon.
+Browser client for an existing Waku daemon. It ships as a static SPA: the build
+is plain HTML/JS/CSS you can host anywhere, and there is no server component —
+nothing starts, proxies, or stores credentials for a daemon.
 
 ```sh
 bun --filter @waku/web dev
@@ -27,13 +27,20 @@ tunnel in front of the listener, forward WebSockets, and use `wss://`.
 
 ```sh
 bun --filter @waku/web build
-bun --filter @waku/web deploy
 ```
 
+The output is `apps/web/dist/client/` — `index.html` plus content-hashed
+`assets/`. `dist/server/` is a prerender intermediate; never deploy it.
+
+Host `dist/client` on any static file server and configure a SPA fallback so
+unmatched paths serve `index.html` (otherwise deep links 404). Serve
+`index.html` uncached and `assets/*` with a long cache lifetime, since those
+filenames are hashed.
+
 The token is a full-control daemon capability. It is sent directly from the
-browser to the configured daemon and is never submitted to the Cloudflare
-Worker. Persistent connections use browser local storage; leave “Remember” off
-to keep it in session storage instead.
+browser to the configured daemon and is never submitted to any hosting server.
+Persistent connections use browser local storage; leave “Remember” off to keep
+it in session storage instead.
 
 Task state, transcripts, workspaces, Git operations, attachments, and provider
 processes all remain daemon-owned. The browser only keeps rendered query state
