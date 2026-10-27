@@ -133,44 +133,7 @@ settings 窄屏导航），涉及 13 个文件 +87/−27，合并上游成本过
 产物 `dist/client/index.html` 含 `format-detection`，CSS 含三条规则与 `safe-area-inset-top`，
 `--app-height` 已进入 `__root` 的 client chunk。未经真机验证（本机无 iOS 设备）。
 
-
-## 003 · 统一 @types/react 版本（修 web 构建的类型冲突）
-
-**日期**：本次定制第三条
-**目标**：让 `bun --filter @waku/web build`（`vite build && tsc --noEmit`）整体通过。
-此前 `apps/web/src/components/transcript.tsx:1398` 报 TS2322：
-
-```
-Type '{ key?: Key | null | undefined; ref?: Ref<HTMLAnchorElement> | undefined; ... }'
-is not assignable to type 'DetailedHTMLProps<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>'
-Types of property 'ref' are incompatible ... Two different types with this name exist, but they are unrelated.
-```
-
-**为什么**：仓库里存在两份 `@types/react` —— 顶层 19.2.18（给 `apps/mobile` 的 `~19.2.2`）
-与 `apps/web/node_modules` 下的 19.3.0，另有一份嵌在 `@types/react-dom/node_modules` 里。
-`node_modules/react-markdown`（顶层解析）的 `components.a` 回调参数用的是 19.2.18 的
-`Ref`，而 `apps/web` 的 JSX intrinsic 用的是 19.3.0 的 `Ref`，两者结构相同但名义不同，
-展开到 `<a>` 上就报「two different types with this name」。`@types/react-dom@19.3.0` 的
-peer 是 `@types/react@^19.3.0`，所以正确方向是统一到 19.3.0，而不是把 web 降回 19.2。
-
-**改动落点**（仓库根 `package.json`）：
-
-```json
-"overrides": { "@types/react": "19.3.0" }
-```
-
-跑 `bun install` 后只装了一份 `@types/react@19.3.0`（顶层），`apps/web/node_modules/@types/react`
-与 `@types/react-dom/node_modules/@types/react` 等嵌套副本被移除；`bun.lock` 的净变化只有
-`@types/react` 解析结果与本条 overrides 记录，没有顺带升级其它依赖。
-
-**约束**：`apps/mobile` 仍声明 `@types/react: ~19.2.2`，实际由根 overrides 提到 19.3.0；
-以后升级 mobile 的 React 类型时不要删这条 override，否则 web 的类型冲突会复发。真要分歧，
-应改为在 `apps/web` 里给 react-markdown 的 props 做显式类型收窄，而不是再引入第二份类型包。
-
-**已验证**：`bun --filter @waku/web build` 退出码 0（vite build + tsc 全绿）；
-`apps/mobile` 的 `bunx tsc --noEmit` 退出码 0（确认提到 19.3.0 未影响 RN 侧）。
-
-## 004 · Web 应用图标与 manifest（iOS 添加到主屏）
+## 003 · Web 应用图标与 manifest（iOS 添加到主屏）
 
 **日期**：本次定制第四条
 **目标**：iOS「添加到主屏幕」不再显示空白图标，且能拿到正确的标题与图标尺寸。
@@ -183,13 +146,13 @@ peer 是 `@types/react@^19.3.0`，所以正确方向是统一到 19.3.0，而不
 
 1. 新增 `apps/web/public/`（Vite `publicDir`，构建时原样拷到 `dist/client/` 根）：
 
-| 文件 | 尺寸 | 来源 |
-|---|---|---|
+| 文件                   | 尺寸    | 来源                                           |
+| ---------------------- | ------- | ---------------------------------------------- |
 | `apple-touch-icon.png` | 180×180 | 直接复用 `website/public/apple-touch-icon.png` |
-| `icon-512.png` | 512×512 | 复用 `website/public/og-icon.png` |
-| `icon-192.png` | 192×192 | `sips -z 192 192` 从 512 缩 |
-| `favicon.png` | 32×32 | `website/public/favicon.png` |
-| `manifest.webmanifest` | — | 新建，`display: "browser"`、主题色 `#f7f7f6` |
+| `icon-512.png`         | 512×512 | 复用 `website/public/og-icon.png`              |
+| `icon-192.png`         | 192×192 | `sips -z 192 192` 从 512 缩                    |
+| `favicon.png`          | 32×32   | `website/public/favicon.png`                   |
+| `manifest.webmanifest` | —       | 新建，`display: "browser"`、主题色 `#f7f7f6`   |
 
 全部不透明（`hasAlpha: no`）、满幅方形：iOS 会自己套圆角，源图不要再带圆角或透明边。
 
@@ -211,7 +174,7 @@ peer 是 `@types/react@^19.3.0`，所以正确方向是统一到 19.3.0，而不
 `dist/client/index.html` 里四条 link 与 `apple-mobile-web-app-title` 均已出现；
 本地静态服务下五个 URL 全部 200 且 `content_type` 正确，manifest 可被 JSON 解析。
 
-## 005 · 主题跟随系统（修 web 端不响应系统明暗）
+## 004 · 主题跟随系统（修 web 端不响应系统明暗）
 
 **日期**：本次定制第五条
 **目标**：web 端在「跟随系统」时，操作系统切换明暗后立即生效，不用刷新。
